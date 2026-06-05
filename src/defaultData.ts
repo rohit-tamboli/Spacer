@@ -1,0 +1,238 @@
+import { Plot } from './types';
+
+export const DEFAULT_PLOTS: Plot[] = [
+  {
+    id: 'plot01',
+    plotNumber: '01',
+    area: 438.34,
+    price: 48217,
+    status: 'available',
+    facing: 'South',
+    coordinates: { x: -170, y: -50, z: 0.5, width: 32, depth: 32 },
+    location: 'Gate Entrance Wing',
+    roadWidth: 30,
+    description: 'Beautiful south-facing plot situated right near the Gate Entrance for easy accessibility.'
+  },
+  {
+    id: 'plot02',
+    plotNumber: '02',
+    area: 416.28,
+    price: 45790,
+    status: 'booked',
+    facing: 'North',
+    coordinates: { x: -170, y: -15, z: 0.5, width: 32, depth: 32 },
+    location: 'Gate Entrance Wing',
+    roadWidth: 30,
+    description: 'North-facing parcel with premium garden setbacks. Excellent immediate soil compaction.'
+  },
+  {
+    id: 'plot03',
+    plotNumber: '03',
+    area: 493.58,
+    price: 54293,
+    status: 'available',
+    facing: 'North-West',
+    coordinates: { x: -135, y: -30, z: 0.5, width: 28, depth: 66 },
+    location: 'Central Ridge West',
+    roadWidth: 30,
+    description: 'High elevation plot with direct views of the continuous emerald walking track.'
+  },
+  {
+    id: 'plot04',
+    plotNumber: '04',
+    area: 511.41,
+    price: 56255,
+    status: 'ongoing',
+    facing: 'North-West',
+    coordinates: { x: -105, y: -25, z: 0.5, width: 28, depth: 72 },
+    location: 'Central Ridge West',
+    roadWidth: 30,
+    description: 'Super-wide frontage parcel with spacious setbacks, ideal for double-tier villas.'
+  },
+  {
+    id: 'plot05',
+    plotNumber: '05',
+    area: 509.49,
+    price: 56043,
+    status: 'sold',
+    facing: 'North-East',
+    coordinates: { x: -75, y: -20, z: 0.5, width: 28, depth: 78 },
+    location: 'Central Ridge East',
+    roadWidth: 30,
+    description: 'Receives wonderful morning sunlight. Quick paved access to the main parkway.'
+  },
+  {
+    id: 'plot06',
+    plotNumber: '06',
+    area: 575.07,
+    price: 63257,
+    status: 'available',
+    facing: 'North-East',
+    coordinates: { x: -45, y: -10, z: 0.5, width: 28, depth: 82 },
+    location: 'Harmony Gardens Ridge',
+    roadWidth: 30,
+    description: 'The largest single-title plot in this ridge with a majestic layout and wide garden alignment.'
+  },
+  {
+    id: 'plot07',
+    plotNumber: '07',
+    area: 500.83,
+    price: 55091,
+    status: 'available',
+    facing: 'North-East',
+    coordinates: { x: -15, y: -5, z: 0.5, width: 28, depth: 85 },
+    location: 'Harmony Gardens Ridge',
+    roadWidth: 30,
+    description: 'Highly vastu-compliant linear plot with clean soil boundaries and zero water-logging.'
+  },
+  {
+    id: 'plot08',
+    plotNumber: '08',
+    area: 500.11,
+    price: 55012,
+    status: 'ongoing',
+    facing: 'North-East',
+    coordinates: { x: 15, y: 0, z: 0.5, width: 28, depth: 85 },
+    location: 'Harmony Gardens Ridge',
+    roadWidth: 30,
+    description: 'Centrally situated near the main 9-meter asphalt internal bypass, premium layout status.'
+  },
+  {
+    id: 'plot09',
+    plotNumber: '09',
+    area: 500.87,
+    price: 55095,
+    status: 'available',
+    facing: 'North-East',
+    coordinates: { x: 45, y: 5, z: 0.5, width: 28, depth: 85 },
+    location: 'Harmony Gardens Ridge',
+    roadWidth: 30,
+    description: 'Quiet enclave villa parcel, insulated from noise waves and elevated beautifully.'
+  },
+  {
+    id: 'plot10',
+    plotNumber: '10',
+    area: 547.95,
+    price: 60274,
+    status: 'available',
+    facing: 'North-East',
+    coordinates: { x: 75, y: 10, z: 0.5, width: 28, depth: 85 },
+    location: 'Resort View Enclave',
+    roadWidth: 30,
+    description: 'A premium-sized estate offering gorgeous sweeping views of the pool area.'
+  },
+  {
+    id: 'plot11',
+    plotNumber: '11',
+    area: 545.83,
+    price: 60041,
+    status: 'available',
+    facing: 'North-East',
+    coordinates: { x: 105, y: 15, z: 0.5, width: 28, depth: 85 },
+    location: 'Resort View Enclave',
+    roadWidth: 30,
+    description: 'Corner block with premium exposure, located right alongside the active open-air resort pool.'
+  },
+  {
+    id: 'plot12',
+    plotNumber: '12',
+    area: 446.53,
+    price: 49118,
+    status: 'available',
+    facing: 'East',
+    coordinates: { x: 160, y: 0, z: 0.5, width: 28, depth: 50 },
+    location: 'Clubhouse Parkway Enclave',
+    roadWidth: 30,
+    description: 'West-paved walk facing plot. Extremely high investment values for duplex homes.'
+  },
+  {
+    id: 'plot13',
+    plotNumber: '13',
+    area: 453.23,
+    price: 49855,
+    status: 'available',
+    facing: 'East',
+    coordinates: { x: 188, y: 10, z: 0.5, width: 28, depth: 50 },
+    location: 'Clubhouse Parkway Enclave',
+    roadWidth: 30,
+    description: 'Direct poolside view! One of the most desirable parcels in the Harmony Farms masterplan.'
+  },
+  {
+    id: 'plot14',
+    plotNumber: '14',
+    area: 422.51,
+    price: 46476,
+    status: 'available',
+    facing: 'South-East',
+    coordinates: { x: 122, y: -30, z: 0.5, width: 24, depth: 55 },
+    location: 'Southern Avenue Road',
+    roadWidth: 30,
+    description: 'Lounge facing sweet spot. Fully clear title registry, ready for immediate sale.'
+  },
+  {
+    id: 'plot15',
+    plotNumber: '15',
+    area: 444.26,
+    price: 48868,
+    status: 'booked',
+    facing: 'South',
+    coordinates: { x: 98, y: -35, z: 0.5, width: 24, depth: 55 },
+    location: 'Southern Avenue Road',
+    roadWidth: 30,
+    description: 'Wide road frontage, equipped with underground optical fibers and smart water drainage.'
+  },
+  {
+    id: 'plot16',
+    plotNumber: '16',
+    area: 401.77,
+    price: 44194,
+    status: 'available',
+    facing: 'South',
+    coordinates: { x: 74, y: -40, z: 0.5, width: 24, depth: 55 },
+    location: 'Southern Avenue Road',
+    roadWidth: 30,
+    description: 'High investment yield, located within close proximity of the gated secure outpost.'
+  },
+  {
+    id: 'plot17',
+    plotNumber: '17',
+    area: 412.74,
+    price: 45401,
+    status: 'available',
+    facing: 'South-West',
+    coordinates: { x: 50, y: -45, z: 0.5, width: 24, depth: 55 },
+    location: 'Southern Avenue Road',
+    roadWidth: 30,
+    description: 'Beautifully levelled plot boundary right next to internal road loop.'
+  }
+];
+
+export const COORD_ROADS = [
+  // Left road branch (vertical)
+  { id: 'road_left_v', name: '9.00 M Internal Road (West)', x: -195, y: -30, width: 14, depth: 100, horizontal: false },
+  // Main curves road (horizontal / wavy)
+  { id: 'road_center_h', name: '9.00 M Internal Road (Central Boulevard)', x: -20, y: -45, width: 330, depth: 14, horizontal: true },
+  // Vertical right artery
+  { id: 'road_right_v', name: '9.00 M Internal Road (East)', x: 140, y: -10, width: 14, depth: 150, horizontal: false },
+  // Bottom internal road below the bottom plots
+  { id: 'road_bottom_h', name: '9.00 M Internal Road (South)', x: 90, y: -78, width: 120, depth: 14, horizontal: true }
+];
+
+export const AMENITIES_DATA = [
+  {
+    id: 'amenity_left',
+    name: 'Harmony Green Amenity Space',
+    category: 'Park',
+    description: 'Lush grass recreation grounds with palm tree borders and outdoor fitness gym.',
+    coordinates: { x: -225, y: -40, z: 0.1 },
+    radius: 35
+  },
+  {
+    id: 'amenity_right',
+    name: 'Harmony Central Pool & Gazebo Enclave',
+    category: 'Clubhouse',
+    description: 'Resort style sparkling swimming pool, gazebo deck, and recreational lounge club.',
+    coordinates: { x: 225, y: -15, z: 0.1 },
+    radius: 32
+  }
+];

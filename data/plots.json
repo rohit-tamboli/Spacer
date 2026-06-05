@@ -1,0 +1,110 @@
+[
+  {
+    "id": "plot01",
+    "plotNumber": "01",
+    "area": 438.34,
+    "price": 48217,
+    "status": "available",
+    "facing": "South",
+    "coordinates": {
+      "x": -170,
+      "y": -50,
+      "z": 0.5,
+      "width": 32,
+      "depth": 32
+    },
+    "location": "Gate Entrance Wing",
+    "roadWidth": 30,
+    "description": "Beautiful south-facing plot situated right near the Gate Entrance for easy accessibility."
+  },
+  {
+    "id": "plot02",
+    "plotNumber": "02",
+    "area": 416.28,
+    "price": 45790,
+    "status": "booked",
+    "facing": "North",
+    "coordinates": {
+      "x": -170,
+      "y": -15,
+      "z": 0.5,
+      "width": 32,
+      "depth": 32
+    },
+    "location": "Gate Entrance Wing",
+    "roadWidth": 30,
+    "description": "North-facing parcel with premium garden setbacks. Excellent immediate soil compaction."
+  },
+  {
+    "id": "plot03",
+    "plotNumber": "03",
+    "area": 493.58,
+    "price": 54293,
+    "status": "available",
+    "facing": "North-West",
+    "coordinates": {
+      "x": -135,
+      "y": -30,
+      "z": 0.5,
+      "width": 28,
+      "depth": 66
+    },
+    "location": "Central Ridge West",
+    "roadWidth": 30,
+    "description": "High elevation plot with direct views of the continuous emerald walking track."
+  },
+  {
+    "id": "plot04",
+    "plotNumber": "04",
+    "area": 511.41,
+    "price": 56255,
+    "status": "ongoing",
+    "facing": "North-West",
+    "coordinates": {
+      "x": -105,
+      "y": -25,
+      "z": 0.5,
+      "width": 28,
+      "depth": 72
+    },
+    "location": "Central Ridge West",
+    "roadWidth": 30,
+    "description": "Super-wide frontage parcel with spacious setbacks, ideal for double-tier villas."
+  },
+  {
+    "id": "plot05",
+    "plotNumber": "05",
+    "area": 509.49,
+    "price": 56043,
+    "status": "sold",
+    "facing": "North-East",
+    "coordinates": {
+      "x": -75,
+      "y": -20,
+      "z": 0.5,
+      "width": 28,
+      "depth": 78
+    },
+    "location": "Central Ridge East",
+    "roadWidth": 30,
+    "description": "Receives wonderful morning sunlight. Quick paved access to the main parkway."
+  },
+  {
+    "plotNumber": "11",
+    "area": 1200,
+    "price": 50000,
+    "status": "available",
+    "facing": "East",
+    "coordinates": {
+      "x": 0,
+      "y": 0,
+      "z": 0.5,
+      "width": 20,
+      "depth": 35
+    },
+    "location": "Sector A: Park Avenue",
+    "roadWidth": 30,
+    "description": "",
+    "id": "p_1780659264765_615"
+  }
+]

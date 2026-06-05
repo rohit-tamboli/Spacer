@@ -1,0 +1,6 @@
+{
+  "name": "Spacer Land Clone",
+  "description": "An interactive 3D and 2D master plan plotting platform for luxury real estate plots, featuring canvas layouts, orbital 3D sandboxes, search highlights, site tour contact systems, and an administrative booking dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
