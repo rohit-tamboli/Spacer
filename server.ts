@@ -32,6 +32,7 @@ const PLOTS_FILE = path.join(DATA_DIR, 'plots.json');
 const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json');
 const LAYOUT_SETTINGS_FILE = path.join(DATA_DIR, 'layout_settings.json');
 const CUSTOM_IMAGE_FILE = path.join(DATA_DIR, 'uploaded_layout.png');
+const DEFAULT_LAYOUT_URL = 'https://res.cloudinary.com/dj4jk7z93/image/upload/f_auto,q_auto/uploaded_layout_urvgc4';
 
 // Ensure data directory and files exist
 function initDatabase() {
@@ -340,10 +341,14 @@ app.post('/api/plots/reset', (req, res) => {
 app.get('/api/layout/settings', (req, res) => {
   try {
     if (!fs.existsSync(LAYOUT_SETTINGS_FILE)) {
-      return res.json({ activeLayout: 'custom', imageMimeType: '', width: 800, height: 500 });
+      return res.json({ activeLayout: 'custom', imageMimeType: 'image/png', width: 800, height: 500, imageUrl: DEFAULT_LAYOUT_URL });
     }
     const content = fs.readFileSync(LAYOUT_SETTINGS_FILE, 'utf-8');
-    res.json(JSON.parse(content));
+    const settings = JSON.parse(content);
+    if (!settings.imageUrl) {
+        settings.imageUrl = DEFAULT_LAYOUT_URL;
+    }
+    res.json(settings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to read layout settings' });
   }
@@ -432,26 +437,28 @@ app.get('/api/layout/image', async (req, res) => {
     res.sendFile(CUSTOM_IMAGE_FILE);
   } else {
     // Try to fallback to URL if saved
+    let imageUrl = DEFAULT_LAYOUT_URL;
     try {
       if (fs.existsSync(LAYOUT_SETTINGS_FILE)) {
         const settings = JSON.parse(fs.readFileSync(LAYOUT_SETTINGS_FILE, 'utf-8'));
         if (settings.imageUrl) {
-          try {
-            const response = await fetch(settings.imageUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
-            if (!response.ok) throw new Error('Failed to fetch image');
-            const buffer = await response.arrayBuffer();
-            res.set('Content-Type', 'image/png');
-            return res.send(Buffer.from(buffer));
-          } catch (fetchErr) {
-            console.error('Error fetching layout image from URL:', fetchErr);
-            return res.status(500).send('Failed to load layout image.');
-          }
+          imageUrl = settings.imageUrl;
         }
       }
     } catch (e) {
       console.error('Error in layout/image fallback:', e);
     }
-    res.status(404).send('Layout image not found.');
+    
+    try {
+        const response = await fetch(imageUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        if (!response.ok) throw new Error('Failed to fetch image');
+        const buffer = await response.arrayBuffer();
+        res.set('Content-Type', 'image/png');
+        return res.send(Buffer.from(buffer));
+    } catch (fetchErr) {
+        console.error('Error fetching layout image from URL:', fetchErr);
+        return res.status(500).send('Failed to load layout image.');
+    }
   }
 });
 
