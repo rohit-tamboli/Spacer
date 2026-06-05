@@ -384,7 +384,33 @@ app.post('/api/layout/upload', (req, res) => {
   }
 });
 
-// 14. Serve custom layout image
+// 14. Delete custom layout image
+app.post('/api/layout/delete', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
+  try {
+    if (fs.existsSync(CUSTOM_IMAGE_FILE)) {
+      fs.unlinkSync(CUSTOM_IMAGE_FILE);
+    }
+    
+    // Also reset layout settings back to demo
+    const settings = { 
+      activeLayout: 'demo', 
+      imageMimeType: '', 
+      filename: '', 
+      width: 800, 
+      height: 500
+    };
+    fs.writeFileSync(LAYOUT_SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
+
+    res.json({ success: true, settings });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to delete layout image: ' + err.message });
+  }
+});
+
+// 15. Serve custom layout image
 app.get('/api/layout/image', (req, res) => {
   if (fs.existsSync(CUSTOM_IMAGE_FILE)) {
     // Send background file
@@ -394,7 +420,49 @@ app.get('/api/layout/image', (req, res) => {
   }
 });
 
-// 15. AI Auto-Detect plots on the layout image using Gemini
+// 16. Set custom layout image from URL
+app.post('/api/layout/set-from-url', async (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
+  
+  const { url } = req.body;
+  
+  if (!url) {
+    return res.status(400).json({ error: 'Missing image URL' });
+  }
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+    
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    
+    // Save image
+    fs.writeFileSync(CUSTOM_IMAGE_FILE, buffer);
+    
+    // Update settings
+    let settings = { 
+      activeLayout: 'custom', 
+      imageMimeType: 'image/png', // Simplified
+      filename: 'layout.png', 
+      width: 800, 
+      height: 500,
+      lastUpdated: Date.now()
+    };
+    fs.writeFileSync(LAYOUT_SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
+    
+    res.json({ success: true, settings });
+  } catch (err: any) {
+    console.error('Error setting layout from URL:', err);
+    res.status(500).json({ error: 'Failed to set layout image: ' + err.message });
+  }
+});
+
+// 17. AI Auto-Detect plots on the layout image using Gemini
 app.post('/api/layout/ai-detect', async (req, res) => {
   try {
     if (!fs.existsSync(CUSTOM_IMAGE_FILE)) {

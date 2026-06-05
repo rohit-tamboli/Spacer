@@ -697,6 +697,34 @@ export default function AdminPanel({
     };
   };
 
+  // Delete layout image
+  const handleDeleteLayoutImage = async () => {
+    if (!window.confirm('Are you sure you want to delete the custom layout image? It will revert to the default demo layout.')) return;
+    
+    setStudioError('');
+    setStudioStatusMsg('Deleting layout image...');
+    
+    try {
+      const res = await fetch('/api/layout/delete', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-token': 'mock-jwt-token-for-admin-spacer'
+        }
+      });
+      
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || 'Failed to delete image.');
+      }
+      
+      onReloadData();
+      setStudioStatusMsg('Layout image deleted successfully.');
+    } catch (err: any) {
+      setStudioError(err.message);
+    }
+  };
+
   // Trigger Gemini API for AI layout detection
   const handleAiAutoDetect = async () => {
     setIsAiDetecting(true);
@@ -1156,6 +1184,47 @@ export default function AdminPanel({
                 className="px-4 py-2 bg-stone-900 text-white font-bold cursor-pointer rounded-lg text-sm"
             >
                 {isUploading ? 'Uploading...' : 'Upload Plot Layout Image'}
+            </button>
+            <div className="flex gap-2">
+                <input 
+                    type="text" 
+                    placeholder="Enter image URL..." 
+                    id="url-input-field"
+                    className="px-4 py-2 border rounded-lg text-sm w-64"
+                />
+                <button 
+                    onClick={async () => {
+                        const url = (document.getElementById('url-input-field') as HTMLInputElement).value;
+                        if (!url) return;
+                        setStudioStatusMsg('Setting layout from URL...');
+                        try {
+                            const res = await fetch('/api/layout/set-from-url', {
+                                method: 'POST',
+                                headers: { 
+                                    'Content-Type': 'application/json',
+                                    'x-admin-token': 'mock-jwt-token-for-admin-spacer'
+                                },
+                                body: JSON.stringify({ url })
+                            });
+                            if (!res.ok) throw new Error('Failed to set layout from URL.');
+                            onReloadData();
+                            setStudioStatusMsg('Layout set from URL successfully.');
+                        } catch (err: any) {
+                            setStudioError(err.message);
+                        }
+                    }}
+                    disabled={isUploading}
+                    className="px-4 py-2 bg-stone-700 text-white font-bold cursor-pointer rounded-lg text-sm"
+                >
+                    Set Layout from URL
+                </button>
+            </div>
+            <button 
+                onClick={handleDeleteLayoutImage}
+                disabled={isUploading}
+                className="px-4 py-2 bg-red-600 text-white font-bold cursor-pointer rounded-lg text-sm"
+            >
+                Delete Layout Image
             </button>
           <div className="flex flex-col items-end">
             <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">All Plots Opacity</span>
