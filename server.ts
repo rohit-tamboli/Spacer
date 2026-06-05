@@ -11,6 +11,21 @@ const PORT = 3000;
 
 app.use(express.json({ limit: '50mb' }));
 
+app.use((req, res, next) => {
+  console.log(`DEBUG REQUEST: ${req.method} ${req.url}`);
+  next();
+});
+
+// Catch-all for 404 to debug where they originate
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    if (res.statusCode === 404) {
+      console.log(`404 NOT FOUND: ${req.method} ${req.url}`);
+    }
+  });
+  next();
+});
+
 // Directories
 const DATA_DIR = path.join(process.cwd(), 'data');
 const PLOTS_FILE = path.join(DATA_DIR, 'plots.json');
