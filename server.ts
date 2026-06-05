@@ -411,11 +411,31 @@ app.post('/api/layout/delete', (req, res) => {
 });
 
 // 15. Serve custom layout image
-app.get('/api/layout/image', (req, res) => {
+app.get('/api/layout/image', async (req, res) => {
   if (fs.existsSync(CUSTOM_IMAGE_FILE)) {
     // Send background file
     res.sendFile(CUSTOM_IMAGE_FILE);
   } else {
+    // Try to fallback to URL if saved
+    try {
+      if (fs.existsSync(LAYOUT_SETTINGS_FILE)) {
+        const settings = JSON.parse(fs.readFileSync(LAYOUT_SETTINGS_FILE, 'utf-8'));
+        if (settings.imageUrl) {
+          try {
+            const response = await fetch(settings.imageUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+            if (!response.ok) throw new Error('Failed to fetch image');
+            const buffer = await response.arrayBuffer();
+            res.set('Content-Type', 'image/png');
+            return res.send(Buffer.from(buffer));
+          } catch (fetchErr) {
+            console.error('Error fetching layout image from URL:', fetchErr);
+            return res.status(500).send('Failed to load layout image.');
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error in layout/image fallback:', e);
+    }
     res.status(404).send('Layout image not found.');
   }
 });
@@ -433,7 +453,7 @@ app.post('/api/layout/set-from-url', async (req, res) => {
   }
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
     if (!response.ok) {
         throw new Error(`Failed to fetch image: ${response.statusText}`);
     }
@@ -447,6 +467,7 @@ app.post('/api/layout/set-from-url', async (req, res) => {
     // Update settings
     let settings = { 
       activeLayout: 'custom', 
+      imageUrl: url, // Store the URL
       imageMimeType: 'image/png', // Simplified
       filename: 'layout.png', 
       width: 800, 
