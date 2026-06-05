@@ -648,6 +648,10 @@ export default function AdminPanel({
 
   // Base64 layout image uploader
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isAdminLoggedIn) {
+       setStudioError('Only admins can upload/replace images.');
+       return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -667,7 +671,10 @@ export default function AdminPanel({
 
         const res = await fetch('/api/layout/upload', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-admin-token': 'mock-jwt-token-for-admin-spacer'
+          },
           body: JSON.stringify(payload)
         });
 
@@ -882,6 +889,7 @@ export default function AdminPanel({
   const [newWidth, setNewWidth] = useState(20);
   const [newDepth, setNewDepth] = useState(35);
   const [newDescription, setNewDescription] = useState('');
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Bulk import textbox state
   const [csvRawText, setCsvRawText] = useState('');
@@ -1135,6 +1143,20 @@ export default function AdminPanel({
       <div className="flex justify-between items-center w-full px-2">
         <h2 className="text-xl font-bold text-stone-800">Admin Dashboard</h2>
         <div className="flex gap-4 items-center">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".png,.jpeg,.jpg"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <button 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="px-4 py-2 bg-stone-900 text-white font-bold cursor-pointer rounded-lg text-sm"
+            >
+                {isUploading ? 'Uploading...' : 'Upload Plot Layout Image'}
+            </button>
           <div className="flex flex-col items-end">
             <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">All Plots Opacity</span>
             <input

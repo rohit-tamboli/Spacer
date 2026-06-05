@@ -9,6 +9,7 @@ interface TwoDMapProps {
   onSelectPlot: (plot: Plot) => void;
   searchQuery: string;
   activeLayout?: 'demo' | 'custom';
+  lastUpdated?: number;
   onReloadLayout?: () => void;
   popupEditingPreview?: { plotId: string; points: { x: number; y: number }[] } | null;
   allPlotsOpacity: number;
@@ -50,6 +51,7 @@ export default function TwoDMap({
   onSelectPlot, 
   searchQuery,
   activeLayout = 'custom',
+  lastUpdated,
   onReloadLayout,
   popupEditingPreview,
   allPlotsOpacity
@@ -127,7 +129,7 @@ export default function TwoDMap({
       setLayoutImage(null);
       setIsImageLoading(false);
     };
-  }, [activeLayout]);
+  }, [activeLayout, lastUpdated]);
 
   // Convert map coordinates (centered on 0,0) to canvas pixel coordinates
   const getCanvasCoords = (mapX: number, mapY: number, width: number, height: number) => {

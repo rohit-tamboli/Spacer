@@ -1,6 +1,8 @@
 {
   "activeLayout": "custom",
-  "imageMimeType": "",
+  "imageMimeType": "image/png",
+  "filename": "uploaded_layout.png",
   "width": 800,
-  "height": 500
+  "height": 500,
+  "lastUpdated": 1780660794722
 }

@@ -299,6 +299,9 @@ app.post('/api/plots/bulk-import', (req, res) => {
 
 // 10. Reset plots back to default configuration
 app.post('/api/plots/reset', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
   writePlots(DEFAULT_PLOTS);
   writeBookings([]);
   
@@ -333,6 +336,9 @@ app.get('/api/layout/settings', (req, res) => {
 
 // 12. Update layout settings
 app.post('/api/layout/settings', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
   try {
     const settings = req.body;
     fs.writeFileSync(LAYOUT_SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
@@ -344,29 +350,33 @@ app.post('/api/layout/settings', (req, res) => {
 
 // 13. Upload layout image (base64)
 app.post('/api/layout/upload', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
   try {
     const { image, mimeType, filename } = req.body;
     if (!image) {
       return res.status(400).json({ error: 'Missing image data' });
     }
-
+    
     // Extract base64 content
     const base64Data = image.replace(/^data:image\/\w+;base64,/, "").replace(/^data:application\/pdf;base64,/, "");
     const buffer = Buffer.from(base64Data, 'base64');
-
+    
     // Save image
     fs.writeFileSync(CUSTOM_IMAGE_FILE, buffer);
-
+    
     // Update settings
     let settings = { 
       activeLayout: 'custom', 
       imageMimeType: mimeType || 'image/png', 
       filename: filename || 'layout.png', 
       width: 800, 
-      height: 500 
+      height: 500,
+      lastUpdated: Date.now()
     };
     fs.writeFileSync(LAYOUT_SETTINGS_FILE, JSON.stringify(settings, null, 2), 'utf-8');
-
+    
     res.json({ success: true, settings });
   } catch (err: any) {
     console.error('Upload error:', err);

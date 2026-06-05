@@ -22,7 +22,7 @@ export default function App() {
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
   const [showAdminConsole, setShowAdminConsole] = useState<boolean>(false);
-  const [layoutSettings, setLayoutSettings] = useState<{ activeLayout: 'demo' | 'custom' }>({ activeLayout: 'custom' });
+  const [layoutSettings, setLayoutSettings] = useState<{ activeLayout: 'demo' | 'custom', lastUpdated?: number }>({ activeLayout: 'custom' });
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
   const [showPasswordModal, setShowPasswordModal] = useState<boolean>(false);
   const [passwordInput, setPasswordInput] = useState<string>('');
@@ -243,6 +243,7 @@ export default function App() {
                   onSelectPlot={handleSelectPlot}
                   searchQuery={filter.search}
                   activeLayout={layoutSettings.activeLayout}
+                  lastUpdated={layoutSettings.lastUpdated}
                   onReloadLayout={loadData}
                   popupEditingPreview={popupEditingPreview}
                   allPlotsOpacity={allPlotsOpacity}
