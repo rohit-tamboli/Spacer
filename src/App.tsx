@@ -226,7 +226,7 @@ export default function App() {
       </header>
 
       {/* 2. Main Page Layout Grid Container */}
-      <main style={{ width: '1299.99px' }} className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
         
         {/* Main Explorer Map Section (Always visible) */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
