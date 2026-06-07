@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+  --default-dark-mode: selector;
+}
+
 /* Remove the vertical scrollbar from the right side of the website globally */
 html,
 body,

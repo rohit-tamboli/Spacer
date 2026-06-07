@@ -173,8 +173,6 @@ function PlotBox({
           e.stopPropagation();
           onSelect(plot);
         }}
-        castShadow
-        receiveShadow
       >
         <extrudeGeometry args={[shape, extrudeSettings]} />
         <meshStandardMaterial

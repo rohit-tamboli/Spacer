@@ -181,7 +181,7 @@ export default function TwoDMap({
     // 1. Draw Map Background
     if (layoutImage) {
       // Clear background with extremely clean canvas frame border
-      ctx.fillStyle = '#fafaf9'; 
+      ctx.fillStyle = '#1D1917'; 
       ctx.fillRect(0, 0, width, height);
 
       // Draw custom layout image centered at (0, 0)
@@ -485,7 +485,7 @@ export default function TwoDMap({
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
-          className="cursor-grab active:cursor-grabbing w-full h-full block"
+          className="cursor-grab active:cursor-grabbing w-full h-full block bg-black"
           id="master-canvas-2d"
         />
       </div>

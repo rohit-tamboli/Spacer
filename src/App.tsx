@@ -9,8 +9,6 @@ import {
   Layers,
   Map,
   ShieldCheck,
-  Moon,
-  Sun,
   Eye,
   EyeOff
 } from 'lucide-react';
@@ -44,6 +42,14 @@ export default function App() {
       setPasswordError('Invalid Password');
     }
   };
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   // Search/Filter State
   const [filter, setFilter] = useState<PlotFilter>({
@@ -125,10 +131,10 @@ export default function App() {
   });
 
   return (
-    <div className={`min-h-screen font-sans transition-colors duration-300 ${isDarkMode ? 'bg-stone-950 text-stone-100 dark' : 'bg-stone-50 text-stone-900'}`}>
+    <div className="min-h-screen font-sans transition-colors duration-300 bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
       
       {/* 1. Header Toolbar */}
-      <header className={`sticky top-0 z-40 border-b transition-colors duration-300 ${isDarkMode ? 'bg-stone-950/80 border-stone-800' : 'bg-white/80 border-stone-200'} backdrop-blur-md`}>
+      <header className="sticky top-0 z-40 border-b transition-colors duration-300 bg-white/80 dark:bg-stone-950/80 border-stone-200 dark:border-stone-800 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
           
           {/* Logo & Description */}
@@ -175,14 +181,7 @@ export default function App() {
             </div>
 
             {/* Light / Dark Mode Toggle */}
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-2 border border-stone-200/60 dark:border-stone-800 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors cursor-pointer"
-              title="Toggle Light/Dark Theme"
-              id="btn-theme-toggle"
-            >
-              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-stone-700" />}
-            </button>
+            {/* REMOVED: Dark mode toggle button */}
 
             {/* Toggle All Plots Visibility Button */}
             <button

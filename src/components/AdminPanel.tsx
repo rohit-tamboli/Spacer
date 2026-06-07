@@ -1152,12 +1152,12 @@ export default function AdminPanel({
 
   if (!isAdminLoggedIn) {
     return (
-      <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200 p-8 shadow-xl max-w-md mx-auto text-center animate-in fade-in duration-300" id="admin-login-lockscreen">
-        <div className="w-12 h-12 bg-stone-100 rounded-full flex items-center justify-center mx-auto mb-4 border border-stone-200 text-stone-700">
+      <div className="bg-white/95 dark:bg-stone-900 backdrop-blur-md rounded-2xl border border-stone-200 dark:border-stone-800 p-8 shadow-xl max-w-md mx-auto text-center animate-in fade-in duration-300 text-stone-900 dark:text-stone-100" id="admin-login-lockscreen">
+        <div className="w-12 h-12 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300">
           <Lock className="w-5 h-5 animate-pulse" />
         </div>
-        <h2 className="text-xl font-bold text-stone-900 leading-none">Security Access Restricted</h2>
-        <p className="text-xs text-stone-500 mt-2.5 max-w-xs mx-auto leading-normal">
+        <h2 className="text-xl font-bold text-stone-900 dark:text-white leading-none">Security Access Restricted</h2>
+        <p className="text-xs text-stone-500 dark:text-stone-400 mt-2.5 max-w-xs mx-auto leading-normal">
           This system dashboard can only be unlocked by verified administrators. Please use the <strong>Admin</strong> security button located in the main header to authenticate.
         </p>
       </div>
@@ -1165,7 +1165,7 @@ export default function AdminPanel({
   }
 
   return (
-    <div className="bg-white/95 backdrop-blur-md rounded-2xl border border-stone-200 p-6 shadow-xl flex flex-col gap-8" id="admin-authenticated-dashboard">
+    <div className="bg-white/95 dark:bg-stone-900 backdrop-blur-md rounded-2xl border border-stone-200 dark:border-stone-800 p-6 shadow-xl flex flex-col gap-8 text-stone-900 dark:text-stone-100" id="admin-authenticated-dashboard">
       
       
       <div className="flex justify-between items-center w-full px-2">
