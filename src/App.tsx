@@ -135,21 +135,8 @@ export default function App() {
       
       {/* 1. Header Toolbar */}
       <header className="sticky top-0 z-40 border-b transition-colors duration-300 bg-white/80 dark:bg-stone-950/80 border-stone-200 dark:border-stone-800 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          
-          {/* Logo & Description */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 bg-stone-900 text-white rounded-xl flex items-center justify-center shadow-md">
-              <Landmark className="w-5 h-5 text-yellow-400" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="text-lg font-bold tracking-tight">SpacerX</h1>
-                <span className="text-[10px] bg-yellow-500/10 text-yellow-600 font-bold px-1.5 py-0.5 rounded uppercase border border-yellow-500/25">Interactive</span>
-              </div>
-              <p className="text-[10px] text-stone-500 leading-none">Luxury Residential & Commercial Plotting Master Plan</p>
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto px-4 py-3.5 flex flex-row items-center justify-between gap-3">
+          <h1 className="text-lg font-bold tracking-tight">SpacerX</h1>
 
           {/* Toggle View & controls */}
           <div className="flex items-center flex-wrap gap-2.5">
@@ -211,13 +198,7 @@ export default function App() {
               }`}
               id="btn-admin-panel-toggle"
             >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              {!isAdminUnlocked 
-                ? 'Admin' 
-                : showAdminConsole 
-                  ? 'Hide Admin Tools' 
-                  : 'Show Admin Tools'
-              }
+              <div className="w-5 h-5 flex items-center justify-center font-bold text-[10px] bg-white/20 rounded-[4px]">A</div>
             </button>
           </div>
 
