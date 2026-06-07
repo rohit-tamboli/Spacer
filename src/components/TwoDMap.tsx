@@ -396,6 +396,59 @@ export default function TwoDMap({
     }
   };
 
+  // Handle touch interactions
+  const getTouchDistance = (t1: React.Touch, t2: React.Touch) => {
+    return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+  };
+
+  const [lastTouchDistance, setLastTouchDistance] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    } else if (e.touches.length === 2) {
+      setIsDragging(false);
+      setLastTouchDistance(getTouchDistance(e.touches[0], e.touches[1]));
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches.length === 1 && isDragging) {
+      const dx = e.touches[0].clientX - dragStart.x;
+      const dy = e.touches[0].clientY - dragStart.y;
+      setPan(prev => ({ x: prev.x + dx, y: prev.y + dy }));
+      setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+    } else if (e.touches.length === 2 && lastTouchDistance !== null) {
+      const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+      const zoomFactor = currentDistance / lastTouchDistance;
+      setZoom(prev => Math.min(Math.max(prev * zoomFactor, 0.4), 5));
+      setLastTouchDistance(currentDistance);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    setIsDragging(false);
+    setLastTouchDistance(null);
+    
+    // Tap-to-select for touch
+    if (e.changedTouches.length === 1 && !isDragging) {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.changedTouches[0].clientX - rect.left;
+        const clientY = e.changedTouches[0].clientY - rect.top;
+        const mapCoords = getMapCoords(clientX, clientY, rect.width, rect.height);
+        for (const plot of plots) {
+          const vertices = getActiveVertices(plot);
+          if (isPointInPolygon(mapCoords, vertices)) {
+            onSelectPlot(plot);
+            break;
+          }
+        }
+    }
+  };
+
   // Attach a non-passive wheel listener natively to guarantee e.preventDefault() blocks global window/page scroll or zoom
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -429,6 +482,9 @@ export default function TwoDMap({
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
           onMouseLeave={() => { setIsDragging(false); }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           className="cursor-grab active:cursor-grabbing w-full h-full block"
           id="master-canvas-2d"
         />

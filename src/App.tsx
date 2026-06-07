@@ -138,7 +138,7 @@ export default function App() {
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h1 className="text-lg font-bold tracking-tight">Spacer Land</h1>
+                <h1 className="text-lg font-bold tracking-tight">SpacerX</h1>
                 <span className="text-[10px] bg-yellow-500/10 text-yellow-600 font-bold px-1.5 py-0.5 rounded uppercase border border-yellow-500/25">Interactive</span>
               </div>
               <p className="text-[10px] text-stone-500 leading-none">Luxury Residential & Commercial Plotting Master Plan</p>
@@ -226,7 +226,7 @@ export default function App() {
       </header>
 
       {/* 2. Main Page Layout Grid Container */}
-      <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
+      <main style={{ width: '1299.99px' }} className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
         
         {/* Main Explorer Map Section (Always visible) */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
