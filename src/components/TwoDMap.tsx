@@ -482,7 +482,7 @@ export default function TwoDMap({
       className={`${
         isFullscreen 
           ? "fixed inset-0 z-50 bg-black flex flex-col h-screen w-screen p-4 md:p-6" 
-          : "relative w-full h-[800px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
+          : "relative w-full h-[700px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
       } font-sans`}
       id="two-d-map-root-container"
     >
