@@ -297,12 +297,12 @@ export default function App() {
       </main>
       
       {/* Edit Mode Active Indicator */}
-      {isEditingPopupOpen && (
+      {/* {isEditingPopupOpen && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-indigo-900 text-white px-4 py-2 rounded-full shadow-lg border border-indigo-700 flex items-center gap-2 text-sm font-medium animate-pulse">
           <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
           Edit Mode Active
         </div>
-      )}
+      )} */}
 
       {/* Plot Details Popup */}
       {selectedPlot && (
