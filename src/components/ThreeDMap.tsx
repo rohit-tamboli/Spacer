@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Stars, Html } from '@react-three/drei';
+import { OrbitControls, Stars, Html, TransformControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Plot, PlotFilter } from '../types';
 import { COORD_ROADS, AMENITIES_DATA } from '../defaultData';
@@ -20,6 +20,8 @@ interface ThreeDMapProps {
   setAllPlotsOpacity: (opacity: number) => void;
   filter: PlotFilter;
   setFilter: (filter: PlotFilter) => void;
+  isEditingMode: boolean;
+  onPlotUpdate: (plot: Plot) => void;
   isAdmin: boolean;
 }
 
@@ -317,6 +319,8 @@ export default function ThreeDMap({
   setAllPlotsOpacity,
   filter,
   setFilter,
+  isEditingMode,
+  onPlotUpdate,
   isAdmin
 }: ThreeDMapProps) {
   
@@ -449,7 +453,7 @@ export default function ThreeDMap({
                 ? plot.plotNumber.toUpperCase().includes(searchQuery.toUpperCase().trim())
                 : false;
 
-              return (
+              const plotComponent = (
                 <PlotBox
                   key={plot.id}
                   plot={plot}
@@ -460,6 +464,35 @@ export default function ThreeDMap({
                   allPlotsOpacity={allPlotsOpacity}
                 />
               );
+
+              if (isAdmin && isEditingMode && isSelected) {
+                return (
+                  <TransformControls
+                    key={plot.id}
+                    mode="translate"
+                    onObjectChange={(e) => {
+                      const obj = (e.target as any).object;
+                      const newX = obj.position.x * 10;
+                      const newZ = -obj.position.z * 10;
+                      
+                      const dx = newX - plot.coordinates.x;
+                      const dz = newZ - plot.coordinates.y;
+                      
+                      const newPoints = getPlotVertices(plot).map(pt => ({ x: pt.x + dx, y: pt.y + dz }));
+                      
+                      onPlotUpdate({
+                        ...plot,
+                        coordinates: { ...plot.coordinates, x: newX, y: newZ },
+                        points: newPoints
+                      });
+                    }}
+                  >
+                    {plotComponent}
+                  </TransformControls>
+                );
+              }
+
+              return plotComponent;
             })}
           </group>
 

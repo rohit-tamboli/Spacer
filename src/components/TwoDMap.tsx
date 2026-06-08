@@ -14,6 +14,7 @@ interface TwoDMapProps {
   lastUpdated?: number;
   onReloadLayout?: () => void;
   popupEditingPreview?: { plotId: string; points: { x: number; y: number }[] } | null;
+  isEditingMode: boolean;
   onPlotUpdate: (plot: Plot) => void;
   allPlotsOpacity: number;
   setAllPlotsOpacity: (opacity: number) => void;
@@ -61,6 +62,7 @@ export default function TwoDMap({
   lastUpdated,
   onReloadLayout,
   popupEditingPreview,
+  isEditingMode,
   onPlotUpdate,
   allPlotsOpacity,
   setAllPlotsOpacity,
@@ -84,6 +86,19 @@ export default function TwoDMap({
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [draggingPlotId, setDraggingPlotId] = useState<string | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [hoveredPlotId, setHoveredPlotId] = useState<string | null>(null);
+  
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    if (draggingPlotId) {
+      canvasRef.current.style.cursor = 'grabbing';
+    } else if (isEditingMode && hoveredPlotId) {
+      canvasRef.current.style.cursor = 'grab';
+    } else {
+      canvasRef.current.style.cursor = isEditingMode ? 'crosshair' : 'default';
+    }
+  }, [draggingPlotId, hoveredPlotId, isEditingMode]);
 
   const getActiveVertices = (plot: Plot) => {
     if (popupEditingPreview && popupEditingPreview.plotId === plot.id) {
@@ -364,15 +379,16 @@ export default function TwoDMap({
     const y = e.clientY - rect.top;
     const mapCoords = getMapCoords(x, y, rect.width, rect.height);
 
-    if (isAdmin) {
+    if (isAdmin && isEditingMode) {
        for (const plot of plots) {
          if (isPointInPolygon(mapCoords, getActiveVertices(plot))) {
            setDraggingPlotId(plot.id);
+           setDragOffset({ x: mapCoords.x - plot.coordinates.x, y: mapCoords.y - plot.coordinates.y });
            return;
          }
        }
     }
-    
+
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
   };
@@ -381,15 +397,43 @@ export default function TwoDMap({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const clientX = e.clientX - rect.left;
-    const clientY = e.clientY - rect.top;
+    // Logic for hover
+    if (isEditingMode && !draggingPlotId) {
+       const rect = canvas.getBoundingClientRect();
+       const x = e.clientX - rect.left;
+       const y = e.clientY - rect.top;
+       const mapCoords = getMapCoords(x, y, rect.width, rect.height);
+       let foundHover = null;
+       for (const plot of plots) {
+         if (isPointInPolygon(mapCoords, getActiveVertices(plot))) {
+           foundHover = plot.id;
+           break;
+         }
+       }
+       setHoveredPlotId(foundHover);
+    }
 
     if (draggingPlotId) {
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const mapCoords = getMapCoords(x, y, rect.width, rect.height);
+      
       const plotToMove = plots.find(p => p.id === draggingPlotId);
       if (plotToMove) {
-         const newMapCoords = getMapCoords(clientX, clientY, rect.width, rect.height);
-         const updatedPlot = { ...plotToMove, coordinates: { ...plotToMove.coordinates, x: newMapCoords.x, y: newMapCoords.y } };
+         const newX = mapCoords.x - dragOffset.x;
+         const newY = mapCoords.y - dragOffset.y;
+         
+         // Translate all points by the difference
+         const dx = newX - plotToMove.coordinates.x;
+         const dy = newY - plotToMove.coordinates.y;
+         const newPoints = getActiveVertices(plotToMove).map(pt => ({ x: pt.x + dx, y: pt.y + dy }));
+
+         const updatedPlot = { 
+           ...plotToMove, 
+           coordinates: { ...plotToMove.coordinates, x: newX, y: newY },
+           points: newPoints
+         };
          onPlotUpdate(updatedPlot);
       }
       return;
@@ -504,7 +548,7 @@ export default function TwoDMap({
       className={`${
         isFullscreen 
           ? "fixed inset-0 z-50 bg-black flex flex-col h-screen w-screen p-4 md:p-6" 
-          : "relative w-full h-[700px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
+          : "relative w-full h-[600px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
       } font-sans`}
       id="two-d-map-root-container"
     >
@@ -527,7 +571,7 @@ export default function TwoDMap({
 
 
       {/* Dedicated Fullscreen control in the top-right / move bottom on mobile */}
-      <div className="absolute bottom-12 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
+      <div className="absolute bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
         <button
           onClick={() => setIsGalleryOpen(true)}
           className="p-2.5 bg-indigo-900/60 hover:bg-indigo-800/80 text-white backdrop-blur-md rounded-xl border border-indigo-700 shadow-md transition-colors flex items-center justify-center cursor-pointer"

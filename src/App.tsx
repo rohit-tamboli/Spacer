@@ -115,8 +115,17 @@ export default function App() {
 
   const handlePlotUpdate = async (updatedPlot: Plot) => {
     setPlots(prev => prev.map(p => p.id === updatedPlot.id ? updatedPlot : p));
-    // Optionally:
-    // await fetch('/api/plots/' + updatedPlot.id, { method: 'PUT', body: JSON.stringify(updatedPlot) });
+    setSelectedPlot(updatedPlot);
+
+    try {
+      await fetch(`/api/plots/${updatedPlot.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedPlot),
+      });
+    } catch (err) {
+      console.error('Failed to persist plot update:', err);
+    }
   };
 
   // Status Filter and Search parameters execution
@@ -211,7 +220,7 @@ export default function App() {
       </header>
 
       {/* 2. Main Page Layout Grid Container */}
-      <main className="max-w-7xl mx-auto px-0 py-2 flex flex-col gap-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
         
         {/* Main Explorer Map Section (Always visible) */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
@@ -231,6 +240,7 @@ export default function App() {
                   lastUpdated={layoutSettings.lastUpdated}
                   onReloadLayout={loadData}
                   popupEditingPreview={popupEditingPreview}
+                  isEditingMode={isEditingPopupOpen}
                   onPlotUpdate={handlePlotUpdate}
                   allPlotsOpacity={allPlotsOpacity}
                   setAllPlotsOpacity={setAllPlotsOpacity}
@@ -246,6 +256,8 @@ export default function App() {
                   searchQuery={filter.search}
                   activeLayout={layoutSettings.activeLayout}
                   popupEditingPreview={popupEditingPreview}
+                  isEditingMode={isEditingPopupOpen}
+                  onPlotUpdate={handlePlotUpdate}
                   allPlotsOpacity={allPlotsOpacity}
                   setAllPlotsOpacity={setAllPlotsOpacity}
                   filter={filter}
@@ -283,6 +295,14 @@ export default function App() {
         )}
 
       </main>
+      
+      {/* Edit Mode Active Indicator */}
+      {isEditingPopupOpen && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-indigo-900 text-white px-4 py-2 rounded-full shadow-lg border border-indigo-700 flex items-center gap-2 text-sm font-medium animate-pulse">
+          <div className="w-2 h-2 rounded-full bg-indigo-400"></div>
+          Edit Mode Active
+        </div>
+      )}
 
       {/* Plot Details Popup */}
       {selectedPlot && (
