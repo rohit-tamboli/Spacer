@@ -40,4 +40,7 @@ export interface PlotFilter {
   minPrice: number;
   maxPrice: number;
   facing: string;
+  showRed: boolean;
+  showGreen: boolean;
+  showBlue: boolean;
 }

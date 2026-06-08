@@ -2,10 +2,12 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stars, Html } from '@react-three/drei';
 import * as THREE from 'three';
-import { Plot } from '../types';
+import { Plot, PlotFilter } from '../types';
 import { COORD_ROADS, AMENITIES_DATA } from '../defaultData';
-import { Sun, HelpCircle } from 'lucide-react';
+import { Sun, HelpCircle, Image as ImageIcon } from 'lucide-react';
 import { getPlotVertices } from './TwoDMap';
+import PlotStatusFilter from './PlotStatusFilter';
+import ImageGalleryModal from './ImageGalleryModal';
 
 interface ThreeDMapProps {
   plots: Plot[];
@@ -15,6 +17,10 @@ interface ThreeDMapProps {
   activeLayout?: 'demo' | 'custom';
   popupEditingPreview?: { plotId: string; points: { x: number; y: number }[] } | null;
   allPlotsOpacity: number;
+  setAllPlotsOpacity: (opacity: number) => void;
+  filter: PlotFilter;
+  setFilter: (filter: PlotFilter) => void;
+  isAdmin: boolean;
 }
 
 // Color codes mapping matching status values
@@ -307,10 +313,15 @@ export default function ThreeDMap({
   searchQuery,
   activeLayout = 'custom',
   popupEditingPreview,
-  allPlotsOpacity
+  allPlotsOpacity,
+  setAllPlotsOpacity,
+  filter,
+  setFilter,
+  isAdmin
 }: ThreeDMapProps) {
   
   const [backgroundTexture, setBackgroundTexture] = useState<THREE.Texture | null>(null);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   // Generate a clean grid plate inside 3D ground canvas texture!
   const proceduralTexture = React.useMemo(() => {
@@ -380,6 +391,20 @@ export default function ThreeDMap({
 
   return (
     <div className="relative w-full h-[600px] bg-stone-950 rounded-2xl border border-stone-800 overflow-hidden shadow-2xl flex flex-col">
+      <PlotStatusFilter filter={filter} setFilter={setFilter} allPlotsOpacity={allPlotsOpacity} setAllPlotsOpacity={setAllPlotsOpacity} />
+      
+      <div className="absolute bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
+         <button
+          onClick={() => setIsGalleryOpen(true)}
+          className="p-2.5 bg-indigo-900/60 hover:bg-indigo-800/80 text-white backdrop-blur-md rounded-xl border border-indigo-700 shadow-md transition-colors flex items-center justify-center cursor-pointer"
+          title="Gallery"
+        >
+          <ImageIcon className="w-5 h-5" />
+        </button>
+      </div>
+
+       <ImageGalleryModal isAdmin={isAdmin} isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
+
       <div className="w-full flex-1">
         <Canvas
           camera={{ position: [0, 18, 22], fov: 45 }}

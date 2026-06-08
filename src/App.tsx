@@ -4,6 +4,7 @@ import TwoDMap from './components/TwoDMap';
 import ThreeDMap from './components/ThreeDMap';
 import AdminPanel from './components/AdminPanel';
 import AdminPlotCustomizerPopup from './components/AdminPlotCustomizerPopup';
+import PlotDetailsPopup from './components/PlotDetailsPopup';
 import {
   Landmark,
   Layers,
@@ -19,6 +20,7 @@ export default function App() {
   const [selectedPlot, setSelectedPlot] = useState<Plot | null>(null);
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [isDetailsPopupOpen, setIsDetailsPopupOpen] = useState<boolean>(false); // Added
   const [showAdminConsole, setShowAdminConsole] = useState<boolean>(false);
   const [layoutSettings, setLayoutSettings] = useState<{ activeLayout: 'demo' | 'custom', lastUpdated?: number }>({ activeLayout: 'custom' });
   const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
@@ -60,6 +62,9 @@ export default function App() {
     minPrice: 0,
     maxPrice: 300000,
     facing: 'all',
+    showRed: true,
+    showGreen: true,
+    showBlue: true,
   });
 
   const loadData = async () => {
@@ -104,10 +109,8 @@ export default function App() {
 
   const handleSelectPlot = (plot: Plot) => {
     setSelectedPlot(plot);
-    if (isAdminUnlocked) {
-      setPopupEditingPreview(null);
-      setIsEditingPopupOpen(true);
-    }
+    setIsDetailsPopupOpen(true);
+    setIsEditingPopupOpen(false);
   };
 
   // Status Filter and Search parameters execution
@@ -120,6 +123,11 @@ export default function App() {
       ? true
       : plot.status === filter.status;
 
+    const colorMatch = 
+      (filter.showRed && plot.status === 'booked') ||
+      (filter.showGreen && plot.status === 'available') ||
+      (filter.showBlue && plot.status === 'sold');
+        
     const facingMatch = filter.facing === 'all'
       ? true
       : plot.facing === filter.facing;
@@ -127,7 +135,11 @@ export default function App() {
     const areaMatch = plot.area >= filter.minArea && plot.area <= filter.maxArea;
     const priceMatch = plot.price >= filter.minPrice && plot.price <= filter.maxPrice;
 
-    return searchMatch && statusMatch && facingMatch && areaMatch && priceMatch;
+    if (filter.search.trim()) {
+      return searchMatch;
+    }
+
+    return statusMatch && colorMatch && facingMatch && areaMatch && priceMatch;
   });
 
   return (
@@ -167,19 +179,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* Light / Dark Mode Toggle */}
-            {/* REMOVED: Dark mode toggle button */}
-
-            {/* Toggle All Plots Visibility Button */}
-            <button
-              onClick={() => setAllPlotsOpacity(prev => prev === 0 ? 0.6 : 0)}
-              className="p-2 border border-stone-200/60 dark:border-stone-800 dark:bg-stone-900 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors cursor-pointer"
-              title={allPlotsOpacity === 0 ? "Show All Plots" : "Hide All Plots"}
-              id="btn-toggle-all-plots"
-            >
-              {allPlotsOpacity === 0 ? <Eye className="w-4 h-4 text-stone-700 dark:text-stone-300" /> : <EyeOff className="w-4 h-4 text-stone-700 dark:text-stone-300" />}
-            </button>
-
             {/* Admin toggle Button */}
             <button
               onClick={() => {
@@ -201,8 +200,8 @@ export default function App() {
               <div className="w-5 h-5 flex items-center justify-center font-bold text-[10px] bg-white/20 rounded-[4px]">A</div>
             </button>
           </div>
-
         </div>
+        
       </header>
 
       {/* 2. Main Page Layout Grid Container */}
@@ -227,6 +226,10 @@ export default function App() {
                   onReloadLayout={loadData}
                   popupEditingPreview={popupEditingPreview}
                   allPlotsOpacity={allPlotsOpacity}
+                  setAllPlotsOpacity={setAllPlotsOpacity}
+                  filter={filter}
+                  setFilter={setFilter}
+                  isAdmin={isAdminUnlocked}
                 />
               ) : (
                 <ThreeDMap
@@ -237,6 +240,10 @@ export default function App() {
                   activeLayout={layoutSettings.activeLayout}
                   popupEditingPreview={popupEditingPreview}
                   allPlotsOpacity={allPlotsOpacity}
+                  setAllPlotsOpacity={setAllPlotsOpacity}
+                  filter={filter}
+                  setFilter={setFilter}
+                  isAdmin={isAdminUnlocked}
                 />
               )}
             </div>
@@ -269,6 +276,24 @@ export default function App() {
         )}
 
       </main>
+
+      {/* Plot Details Popup */}
+      {selectedPlot && (
+        <PlotDetailsPopup
+          plot={selectedPlot}
+          isOpen={isDetailsPopupOpen}
+          onClose={() => setIsDetailsPopupOpen(false)}
+          isAdmin={isAdminUnlocked}
+          onEdit={() => {
+            setIsDetailsPopupOpen(false);
+            setPopupEditingPreview(null);
+            setIsEditingPopupOpen(true);
+          }}
+          onDelete={() => {
+            alert('Delete plot functionality coming soon');
+          }}
+        />
+      )}
 
       {/* Admin Plot Customization Popup Window */}
       {selectedPlot && isAdminUnlocked && isEditingPopupOpen && (

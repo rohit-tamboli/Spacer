@@ -43,6 +43,9 @@ export default function FilterControls({
       minPrice: 0,
       maxPrice: 300000,
       facing: 'all',
+      showRed: true,
+      showGreen: true,
+      showBlue: true,
     });
   };
 

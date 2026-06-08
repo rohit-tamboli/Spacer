@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Plot } from '../types';
+import { Plot, PlotFilter } from '../types';
 import { COORD_ROADS, AMENITIES_DATA } from '../defaultData';
-import { Maximize2, Minimize2 } from 'lucide-react';
+import { Maximize2, Minimize2, Image as ImageIcon } from 'lucide-react';
+import PlotStatusFilter from './PlotStatusFilter';
+import ImageGalleryModal from './ImageGalleryModal';
 
 interface TwoDMapProps {
   plots: Plot[];
@@ -13,6 +15,10 @@ interface TwoDMapProps {
   onReloadLayout?: () => void;
   popupEditingPreview?: { plotId: string; points: { x: number; y: number }[] } | null;
   allPlotsOpacity: number;
+  setAllPlotsOpacity: (opacity: number) => void;
+  filter: PlotFilter;
+  setFilter: (filter: PlotFilter) => void;
+  isAdmin: boolean;
 }
 
 // Ray-casting algorithm for point-in-polygon test
@@ -54,7 +60,11 @@ export default function TwoDMap({
   lastUpdated,
   onReloadLayout,
   popupEditingPreview,
-  allPlotsOpacity
+  allPlotsOpacity,
+  setAllPlotsOpacity,
+  filter,
+  setFilter,
+  isAdmin
 }: TwoDMapProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -70,6 +80,7 @@ export default function TwoDMap({
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [layoutImage, setLayoutImage] = useState<HTMLImageElement | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const getActiveVertices = (plot: Plot) => {
     if (popupEditingPreview && popupEditingPreview.plotId === plot.id) {
@@ -181,7 +192,7 @@ export default function TwoDMap({
     // 1. Draw Map Background
     if (layoutImage) {
       // Clear background with extremely clean canvas frame border
-      ctx.fillStyle = '#1D1917'; 
+      ctx.fillStyle = '#0a0a0a'; 
       ctx.fillRect(0, 0, width, height);
 
       // Draw custom layout image centered at (0, 0)
@@ -324,9 +335,9 @@ export default function TwoDMap({
       const centerCoord = getCanvasCoords(cx, cy, width, height);
 
       // Label background card for contrast in case layout is busy
-      ctx.fillStyle = '#ffffffc0';
+      ctx.fillStyle = '#f5f5f4c0';
       ctx.fillRect(centerCoord.x - 16, centerCoord.y - 8, 32, 16);
-      ctx.strokeStyle = '#00000015';
+      ctx.strokeStyle = '#ffffff15';
       ctx.lineWidth = 1;
       ctx.strokeRect(centerCoord.x - 16, centerCoord.y - 8, 32, 16);
 
@@ -470,12 +481,13 @@ export default function TwoDMap({
     <div 
       className={`${
         isFullscreen 
-          ? "fixed inset-0 z-50 bg-stone-100 flex flex-col h-screen w-screen p-4 md:p-6" 
-          : "relative w-full h-[600px] flex flex-col bg-[#1e1b4b]  rounded-2xl border border-0 overflow-hidden shadow-inner"
+          ? "fixed inset-0 z-50 bg-black flex flex-col h-screen w-screen p-4 md:p-6" 
+          : "relative w-full h-[600px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
       } font-sans`}
       id="two-d-map-root-container"
     >
       <div ref={containerRef} className="w-full flex-1 touch-none relative">
+        <PlotStatusFilter filter={filter} setFilter={setFilter} allPlotsOpacity={allPlotsOpacity} setAllPlotsOpacity={setAllPlotsOpacity} />
         <canvas
           ref={canvasRef}
           onMouseDown={handleMouseDown}
@@ -492,8 +504,15 @@ export default function TwoDMap({
 
 
 
-      {/* Dedicated Fullscreen control in the top-right */}
-      <div className="absolute top-4 right-4 z-10 flex gap-2">
+      {/* Dedicated Fullscreen control in the top-right / move bottom on mobile */}
+      <div className="absolute bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
+        <button
+          onClick={() => setIsGalleryOpen(true)}
+          className="p-2.5 bg-indigo-900/60 hover:bg-indigo-800/80 text-white backdrop-blur-md rounded-xl border border-indigo-700 shadow-md transition-colors flex items-center justify-center cursor-pointer"
+          title="Gallery"
+        >
+          <ImageIcon className="w-5 h-5" />
+        </button>
         <button
           onClick={() => setIsFullscreen(prev => !prev)}
           className="p-2.5 bg-white/95 hover:bg-stone-50 text-stone-800 backdrop-blur-md rounded-xl border border-stone-200 shadow-md transition-colors flex items-center justify-center cursor-pointer"
@@ -503,6 +522,8 @@ export default function TwoDMap({
           {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
         </button>
       </div>
+
+       <ImageGalleryModal isAdmin={isAdmin} isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
 
 
     </div>

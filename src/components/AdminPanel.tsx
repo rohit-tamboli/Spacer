@@ -1152,45 +1152,87 @@ export default function AdminPanel({
 
   if (!isAdminLoggedIn) {
     return (
-      <div className="bg-white/95 dark:bg-stone-900 backdrop-blur-md rounded-2xl border border-stone-200 dark:border-stone-800 p-8 shadow-xl max-w-md mx-auto text-center animate-in fade-in duration-300 text-stone-900 dark:text-stone-100" id="admin-login-lockscreen">
-        <div className="w-12 h-12 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-4 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300">
-          <Lock className="w-5 h-5 animate-pulse" />
+      <div className="flex items-center justify-center min-h-[400px] w-full bg-[#0f0c29] p-6" id="admin-login-lockscreen">
+        <div className="bg-[#1e1b4b]/80 backdrop-blur-xl rounded-3xl border border-[#312e81]/50 p-8 shadow-2xl max-w-sm w-full text-center animate-in fade-in duration-500 text-white">
+          <div className="w-16 h-16 bg-[#312e81] rounded-2xl flex items-center justify-center mx-auto mb-6 border border-[#4f46e5]">
+            <Lock className="w-8 h-8 text-indigo-300" />
+          </div>
+          <h2 className="text-2xl font-bold leading-tight">Security Access</h2>
+          <p className="text-sm text-indigo-300/80 mt-3 mb-6">
+            Authentication required for administrator dashboard.
+          </p>
+          <form onSubmit={handleAdminAuth} className="flex flex-col gap-4">
+             <input
+               type="text"
+               placeholder="Username"
+               value={username}
+               onChange={(e) => setUsername(e.target.value)}
+               className="w-full px-4 py-3 rounded-xl bg-[#0f0c29] border border-[#312e81] text-white placeholder-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+             />
+             <input
+               type="password"
+               placeholder="Password"
+               value={password}
+               onChange={(e) => setPassword(e.target.value)}
+               className="w-full px-4 py-3 rounded-xl bg-[#0f0c29] border border-[#312e81] text-white placeholder-indigo-300/50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+             />
+             <button
+               type="submit"
+               className="w-full py-3 mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition duration-200"
+             >
+               Unlock Access
+             </button>
+          </form>
+          {loginError && <p className="text-red-400 text-xs mt-4 mt-4">{loginError}</p>}
         </div>
-        <h2 className="text-xl font-bold text-stone-900 dark:text-white leading-none">Security Access Restricted</h2>
-        <p className="text-xs text-stone-500 dark:text-stone-400 mt-2.5 max-w-xs mx-auto leading-normal">
-          This system dashboard can only be unlocked by verified administrators. Please use the <strong>Admin</strong> security button located in the main header to authenticate.
-        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white/95 dark:bg-stone-900 backdrop-blur-md rounded-2xl border border-stone-200 dark:border-stone-800 p-6 shadow-xl flex flex-col gap-8 text-stone-900 dark:text-stone-100" id="admin-authenticated-dashboard">
-      
-      
-      <div className="flex justify-between items-center w-full px-2">
-        <h2 className="text-xl font-bold text-stone-800">Admin Dashboard</h2>
-        <div className="flex gap-4 items-center">
-            <input
-              type="file"
-              ref={fileInputRef}
-              accept=".png,.jpeg,.jpg"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            <button 
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className="px-4 py-2 bg-stone-900 text-white font-bold cursor-pointer rounded-lg text-sm"
+    <div className="bg-[#0f0c29] rounded-3xl border border-[#312e81]/30 p-8 shadow-2xl flex flex-col gap-10 text-indigo-100" id="admin-authenticated-dashboard">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <h2 className="text-3xl font-extrabold text-white tracking-tighter">Admin Control Center</h2>
+        <div className="flex gap-3 text-sm">
+             <button 
+                onClick={onLock}
+                className="px-5 py-2.5 bg-indigo-900/50 hover:bg-indigo-800/60 text-indigo-200 font-bold rounded-xl transition"
             >
-                {isUploading ? 'Uploading...' : 'Upload Plot Layout Image'}
+                Lock Dashboard
             </button>
-            <div className="flex gap-2">
+        </div>
+      </div>
+      
+            {/* Layout Management Tools */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+        <div className="p-6 bg-[#1e1b4b]/50 rounded-2xl border border-[#312e81]/30">
+            <h3 className="text-lg font-bold text-white mb-4">Map & Layout</h3>
+            <div className="flex flex-col gap-3">
+                <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept=".png,.jpeg,.jpg"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                />
+                <button 
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm transition"
+                >
+                    {isUploading ? 'Uploading...' : 'Upload Plot Layout Image'}
+                </button>
+            </div>
+        </div>
+        
+        <div className="p-6 bg-[#1e1b4b]/50 rounded-2xl border border-[#312e81]/30 flex flex-col gap-4">
+            <h3 className="text-lg font-bold text-white">Layout URL</h3>
+            <div className="flex flex-col gap-2">
                 <input 
                     type="text" 
                     placeholder="Enter image URL..." 
                     id="url-input-field"
-                    className="px-4 py-2 border rounded-lg text-sm w-64"
+                    className="px-4 py-2 border border-[#312e81] rounded-lg bg-[#0f0c29] text-white text-sm w-full"
                 />
                 <button 
                     onClick={async () => {
@@ -1214,65 +1256,68 @@ export default function AdminPanel({
                         }
                     }}
                     disabled={isUploading}
-                    className="px-4 py-2 bg-stone-700 text-white font-bold cursor-pointer rounded-lg text-sm"
+                    className="px-4 py-2 bg-stone-700 hover:bg-stone-600 text-white font-bold cursor-pointer rounded-lg text-sm"
                 >
                     Set Layout from URL
                 </button>
+                <button 
+                    onClick={handleDeleteLayoutImage}
+                    disabled={isUploading}
+                    className="px-4 py-2 bg-red-900 border border-red-700 hover:bg-red-800 text-red-100 font-bold cursor-pointer rounded-lg text-sm"
+                >
+                    Delete Layout Image
+                </button>
             </div>
-            <button 
-                onClick={handleDeleteLayoutImage}
-                disabled={isUploading}
-                className="px-4 py-2 bg-red-600 text-white font-bold cursor-pointer rounded-lg text-sm"
-            >
-                Delete Layout Image
-            </button>
-          <div className="flex flex-col items-end">
-            <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider">All Plots Opacity</span>
+        </div>
+      </div>
+      
+      <div className="flex flex-col items-end">
+        <span className="text-[10px] font-bold text-indigo-300/50 uppercase tracking-wider mb-2">All Plots Opacity</span>
+        <div className="flex gap-4 items-center">
             <input
-              type="range"
-              min="0.1"
-              max="1.0"
-              step="0.1"
-              value={allPlotsOpacity}
-              onChange={(e) => onAllPlotsOpacityChange(parseFloat(e.target.value))}
-              className="w-32 h-1.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+            type="range"
+            min="0.1"
+            max="1.0"
+            step="0.1"
+            value={allPlotsOpacity}
+            onChange={(e) => onAllPlotsOpacityChange(parseFloat(e.target.value))}
+            className="w-32 h-1.5 bg-indigo-900/50 rounded-lg appearance-none cursor-pointer accent-indigo-400"
             />
-          </div>
-          <button onClick={() => { localStorage.setItem('allPlotsOpacity', String(allPlotsOpacity)); alert('Opacity saved'); }} className="px-4 py-2 bg-indigo-600 text-white font-bold border border-indigo-700 cursor-pointer rounded-lg text-sm">Save</button>
-          <button onClick={() => setIsAdminLoggedIn(false)} className="px-4 py-2 bg-stone-100 font-bold border border-stone-200 cursor-pointer rounded-lg text-sm">Lock Terminal</button>
+            <button onClick={() => { localStorage.setItem('allPlotsOpacity', String(allPlotsOpacity)); alert('Opacity saved'); }} className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg text-sm">Save</button>
+            <button onClick={() => setIsAdminLoggedIn(false)} className="px-4 py-2 bg-indigo-950 hover:bg-indigo-900 text-indigo-300 font-bold border border-indigo-800 cursor-pointer rounded-lg text-sm">Lock Terminal</button>
         </div>
       </div>
 
-      <div className="w-full">
-        <h3 className="text-lg font-bold mb-4">Add New Plot</h3>
-        <form onSubmit={handleCreatePlot} className="bg-stone-50 p-4 rounded-lg border border-stone-200">
+      <div className="w-full p-6 bg-[#1e1b4b]/50 rounded-2xl border border-[#312e81]/30">
+        <h3 className="text-lg font-bold text-white mb-4">Add New Plot</h3>
+        <form onSubmit={handleCreatePlot} className="flex flex-col gap-3">
           <input 
             type="text" 
             placeholder="Plot Number" 
             value={newPlotNumber}
             onChange={(e) => setNewPlotNumber(e.target.value)}
-            className="w-full p-2 border rounded mb-2"
+            className="w-full px-4 py-2 bg-[#0f0c29] border border-[#312e81] text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <button type="submit" className="w-full py-2 bg-green-600 text-white font-bold rounded">Create Plot</button>
+          <button type="submit" className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition">Create Plot</button>
         </form>
       </div>
 
-      <div className="w-full">
-        <h3 className="text-lg font-bold mb-4">Manage Plots ({plots.length})</h3>
-        <div className="grid gap-2">
+      <div className="w-full p-6 bg-[#1e1b4b]/50 rounded-2xl border border-[#312e81]/30">
+        <h3 className="text-lg font-bold text-white mb-4">Manage Plots ({plots.length})</h3>
+        <div className="grid gap-3">
           {plots.map(plot => (
-            <div key={plot.id} className="flex items-center justify-between bg-stone-50 p-3 rounded-lg border border-stone-200">
-              <span className="font-mono font-bold text-stone-700">Plot {plot.plotNumber}</span>
+            <div key={plot.id} className="flex items-center justify-between bg-[#0f0c29] p-4 rounded-xl border border-[#312e81]">
+              <span className="font-mono font-bold text-indigo-100">Plot {plot.plotNumber}</span>
               <div className="flex gap-2">
                 <button 
                   type="button"
                   onClick={(e) => { e.preventDefault(); onSelectPlot(plot); }}
-                  className="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-bold rounded hover:bg-indigo-200"
+                  className="px-4 py-2 bg-indigo-900/50 hover:bg-indigo-800 text-indigo-200 text-xs font-bold rounded-lg transition"
                 >Customize</button>
                 <button 
                   type="button"
                   onClick={(e) => { e.preventDefault(); handleDeletePlot(plot.id); }}
-                  className="px-3 py-1 bg-red-100 text-red-800 text-xs font-bold rounded hover:bg-red-200"
+                  className="px-4 py-2 bg-red-950 hover:bg-red-900 text-red-200 text-xs font-bold rounded-lg transition"
                 >Delete</button>
               </div>
             </div>

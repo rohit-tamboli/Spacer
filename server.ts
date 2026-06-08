@@ -505,6 +505,62 @@ app.post('/api/layout/set-from-url', async (req, res) => {
   }
 });
 
+// --- GALLERY API ---
+const GALLERY_DIR = path.join(DATA_DIR, 'gallery');
+if (!fs.existsSync(GALLERY_DIR)) {
+  fs.mkdirSync(GALLERY_DIR, { recursive: true });
+}
+
+// 18. List gallery images
+app.get('/api/gallery', (req, res) => {
+  try {
+    const files = fs.readdirSync(GALLERY_DIR);
+    res.json(files.filter(f => f.match(/\.(png|jpg|jpeg|gif)$/i)));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to list gallery images' });
+  }
+});
+
+// 19. Upload gallery image
+app.post('/api/gallery/upload', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
+  try {
+    const { image, filename } = req.body;
+    const base64Data = image.replace(/^data:image\/\w+;base64,/, "");
+    const buffer = Buffer.from(base64Data, 'base64');
+    fs.writeFileSync(path.join(GALLERY_DIR, filename), buffer);
+    res.json({ success: true });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Failed to upload: ' + err.message });
+  }
+});
+
+// 20. Delete gallery image
+app.delete('/api/gallery/:filename', (req, res) => {
+  if (req.headers['x-admin-token'] !== 'mock-jwt-token-for-admin-spacer') {
+    return res.status(403).json({ error: 'Unauthorized: Admin access required' });
+  }
+  const filePath = path.join(GALLERY_DIR, req.params.filename);
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath);
+    res.json({ success: true });
+  } else {
+    res.status(404).json({ error: 'Image not found' });
+  }
+});
+
+// 21. Serve gallery image
+app.get('/api/gallery/:filename', (req, res) => {
+  const filePath = path.join(GALLERY_DIR, req.params.filename);
+  if (fs.existsSync(filePath)) {
+    res.sendFile(filePath);
+  } else {
+    res.status(404).json({ error: 'Image not found' });
+  }
+});
+
 // 17. AI Auto-Detect plots on the layout image using Gemini
 app.post('/api/layout/ai-detect', async (req, res) => {
   try {
