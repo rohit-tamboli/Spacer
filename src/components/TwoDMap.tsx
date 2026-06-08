@@ -505,7 +505,7 @@ export default function TwoDMap({
 
 
       {/* Dedicated Fullscreen control in the top-right / move bottom on mobile */}
-      <div className="absolute bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
+      <div className="absolute bottom-12 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
         <button
           onClick={() => setIsGalleryOpen(true)}
           className="p-2.5 bg-indigo-900/60 hover:bg-indigo-800/80 text-white backdrop-blur-md rounded-xl border border-indigo-700 shadow-md transition-colors flex items-center justify-center cursor-pointer"
