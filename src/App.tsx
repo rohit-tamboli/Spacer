@@ -113,6 +113,12 @@ export default function App() {
     setIsEditingPopupOpen(false);
   };
 
+  const handlePlotUpdate = async (updatedPlot: Plot) => {
+    setPlots(prev => prev.map(p => p.id === updatedPlot.id ? updatedPlot : p));
+    // Optionally:
+    // await fetch('/api/plots/' + updatedPlot.id, { method: 'PUT', body: JSON.stringify(updatedPlot) });
+  };
+
   // Status Filter and Search parameters execution
   const filteredPlots = plots.filter((plot) => {
     const searchMatch = filter.search.trim()
@@ -205,7 +211,7 @@ export default function App() {
       </header>
 
       {/* 2. Main Page Layout Grid Container */}
-      <main className="max-w-7xl mx-auto px-0 py-2 flex flex-col gap-8">
+      <main className="max-w-7xl mx-auto px-4 py-6 flex flex-col gap-8">
         
         {/* Main Explorer Map Section (Always visible) */}
         <div className="w-full flex flex-col lg:flex-row gap-6 items-start">
@@ -225,6 +231,7 @@ export default function App() {
                   lastUpdated={layoutSettings.lastUpdated}
                   onReloadLayout={loadData}
                   popupEditingPreview={popupEditingPreview}
+                  onPlotUpdate={handlePlotUpdate}
                   allPlotsOpacity={allPlotsOpacity}
                   setAllPlotsOpacity={setAllPlotsOpacity}
                   filter={filter}

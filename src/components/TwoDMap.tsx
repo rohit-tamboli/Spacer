@@ -14,6 +14,7 @@ interface TwoDMapProps {
   lastUpdated?: number;
   onReloadLayout?: () => void;
   popupEditingPreview?: { plotId: string; points: { x: number; y: number }[] } | null;
+  onPlotUpdate: (plot: Plot) => void;
   allPlotsOpacity: number;
   setAllPlotsOpacity: (opacity: number) => void;
   filter: PlotFilter;
@@ -60,6 +61,7 @@ export default function TwoDMap({
   lastUpdated,
   onReloadLayout,
   popupEditingPreview,
+  onPlotUpdate,
   allPlotsOpacity,
   setAllPlotsOpacity,
   filter,
@@ -81,6 +83,7 @@ export default function TwoDMap({
   const [layoutImage, setLayoutImage] = useState<HTMLImageElement | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [draggingPlotId, setDraggingPlotId] = useState<string | null>(null);
 
   const getActiveVertices = (plot: Plot) => {
     if (popupEditingPreview && popupEditingPreview.plotId === plot.id) {
@@ -354,6 +357,22 @@ export default function TwoDMap({
 
   // Mouse Listeners
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const mapCoords = getMapCoords(x, y, rect.width, rect.height);
+
+    if (isAdmin) {
+       for (const plot of plots) {
+         if (isPointInPolygon(mapCoords, getActiveVertices(plot))) {
+           setDraggingPlotId(plot.id);
+           return;
+         }
+       }
+    }
+    
     setIsDragging(true);
     setDragStart({ x: e.clientX, y: e.clientY });
   };
@@ -366,6 +385,16 @@ export default function TwoDMap({
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
+    if (draggingPlotId) {
+      const plotToMove = plots.find(p => p.id === draggingPlotId);
+      if (plotToMove) {
+         const newMapCoords = getMapCoords(clientX, clientY, rect.width, rect.height);
+         const updatedPlot = { ...plotToMove, coordinates: { ...plotToMove.coordinates, x: newMapCoords.x, y: newMapCoords.y } };
+         onPlotUpdate(updatedPlot);
+      }
+      return;
+    }
+
     if (isDragging) {
       const dx = e.clientX - dragStart.x;
       const dy = e.clientY - dragStart.y;
@@ -373,20 +402,13 @@ export default function TwoDMap({
       setDragStart({ x: e.clientX, y: e.clientY });
       return;
     }
-
-    const mapCoords = getMapCoords(clientX, clientY, rect.width, rect.height);
-    let foundPlot: Plot | null = null;
-
-    for (const plot of plots) {
-      const vertices = getActiveVertices(plot);
-      if (isPointInPolygon(mapCoords, vertices)) {
-        foundPlot = plot;
-        break;
-      }
-    }
   };
 
   const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (draggingPlotId) {
+      setDraggingPlotId(null);
+      return;
+    }
     setIsDragging(false);
 
     const canvas = canvasRef.current;
@@ -482,7 +504,7 @@ export default function TwoDMap({
       className={`${
         isFullscreen 
           ? "fixed inset-0 z-50 bg-black flex flex-col h-screen w-screen p-4 md:p-6" 
-          : "relative w-full h-[700px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
+          : "relative w-full h-[600px] flex flex-col bg-black rounded-2xl border border-stone-800 overflow-hidden shadow-inner"
       } font-sans`}
       id="two-d-map-root-container"
     >
@@ -505,7 +527,7 @@ export default function TwoDMap({
 
 
       {/* Dedicated Fullscreen control in the top-right / move bottom on mobile */}
-      <div className="absolute bottom-12 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
+      <div className="absolute bottom-4 right-4 md:bottom-auto md:top-4 md:right-4 z-10 flex gap-2">
         <button
           onClick={() => setIsGalleryOpen(true)}
           className="p-2.5 bg-indigo-900/60 hover:bg-indigo-800/80 text-white backdrop-blur-md rounded-xl border border-indigo-700 shadow-md transition-colors flex items-center justify-center cursor-pointer"
